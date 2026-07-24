@@ -26,6 +26,13 @@ class Scanner:
         "t2w",
     }
 
+    ANATOMICAL_FOLDERS = {
+        "anat",
+        "anatomical",
+        "structural",
+        "struct",
+    }
+
     T1W_NAME_TOKENS = {
         "t1weighted",
         "mprage",
@@ -69,14 +76,17 @@ class Scanner:
         stem = self._nifti_stem(file_path).lower()
         parts = {part.lower() for part in Path(file_path).parts}
 
-        if self._bids_suffix(file_path) == "t1w":
-            return True
-
         if (
             any(token in stem for token in self.NON_T1W_TOKENS)
             or parts.intersection(self.NON_T1W_TOKENS)
         ):
             return False
+
+        if not parts.intersection(self.ANATOMICAL_FOLDERS):
+            return False
+
+        if self._bids_suffix(file_path) == "t1w":
+            return True
 
         if self._contains_t1_label(stem):
             return True
@@ -84,7 +94,7 @@ class Scanner:
         if any(token in stem for token in self.T1W_NAME_TOKENS):
             return True
 
-        return "anat" in parts
+        return False
 
     def _is_nifti(self, file_path):
         name = Path(file_path).name.lower()

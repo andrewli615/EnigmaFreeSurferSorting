@@ -91,9 +91,14 @@ Reports are written to:
 
 The report ends with `FINAL STATUS: VALID` or `FINAL STATUS: FAILED`.
 
-## Sockeye
+## Sockeye Workflow
 
-The Slurm wrapper mirrors the HALFpipe sorter workflow:
+There are two separate Slurm steps.
+
+### Step A: Sort T1w Files
+
+This step scans a raw source dataset and creates numeric batches containing up
+to 30 T1w `.nii` files. It does not create FreeSurfer PBS files.
 
 ```bash
 export WORK_DIR=/scratch/YOUR_ACCOUNT/YOUR_USER
@@ -112,6 +117,39 @@ Review the preview output first. Then rerun with:
 export APPLY_CHANGES=true
 sbatch --account=YOUR_ACCOUNT jobs/submit_sort.sh
 ```
+
+### Step B: Prepare FreeSurfer Batch Folders
+
+This step is separate from file sorting. It enters a folder such as
+`FS_ChineseEthnoracial`, processes every direct batch folder inside it, moves
+top-level `.nii` files into `rawdata/` when needed, creates no imaging copies,
+and writes batch-specific FreeSurfer Step 1, 3, 4, and 5 PBS files.
+
+Preview:
+
+```bash
+export WORK_DIR=/scratch/ss-vbrain-1/ali152
+export PROJECT_DIR=$WORK_DIR/EnigmaFreeSurferSorting
+export PROJECT_NAME=FS_ChineseEthnoracial
+export BATCH_ROOT=$WORK_DIR/$PROJECT_NAME
+export EMAIL=ali152@student.ubc.ca
+export APPLY_CHANGES=false
+
+sbatch jobs/submit_prepare_freesurfer_batches.sh
+```
+
+Apply after reviewing the preview:
+
+```bash
+export APPLY_CHANGES=true
+sbatch jobs/submit_prepare_freesurfer_batches.sh
+```
+
+Each direct folder under `BATCH_ROOT` becomes its own reference name. For
+example, `FS_ChineseEthnoracial/SLIM_2` receives job names and paths containing
+`SLIM_2`, creates/uses `SLIM_2/rawdata`, writes FreeSurfer output to
+`SLIM_2/FSoutput`, and sets Step 1 `parallel --jobs` to the number of `.nii`
+files in `SLIM_2/rawdata`.
 
 ## Validate Existing Output
 

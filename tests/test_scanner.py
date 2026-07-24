@@ -41,8 +41,16 @@ class TestScanner(unittest.TestCase):
         self.assertEqual(result["t1w_files"], [t1w.resolve(), t1w_gz.resolve()])
         self.assertEqual(len(result["unknown_files"]), 2)
 
-    def test_accepts_plain_anat_folder_files_when_no_other_modality_token_exists(self):
-        t1w = self.create_file("anat/ST1AAB0001.nii")
+    def test_rejects_unlabeled_anat_folder_files(self):
+        self.create_file("anat/ST1AAB0001.nii")
+
+        result = self.scanner.scan(self.root)
+
+        self.assertEqual(result["t1w_files"], [])
+        self.assertEqual(len(result["unknown_files"]), 1)
+
+    def test_accepts_t1_labeled_anat_folder_files(self):
+        t1w = self.create_file("anat/ST1AAB0001_t1.nii")
 
         result = self.scanner.scan(self.root)
 
@@ -50,6 +58,22 @@ class TestScanner(unittest.TestCase):
 
     def test_subject_id_containing_t1_does_not_make_functional_file_t1w(self):
         self.create_file("func/ST1AAB0001_resting.nii")
+
+        result = self.scanner.scan(self.root)
+
+        self.assertEqual(result["t1w_files"], [])
+        self.assertEqual(len(result["unknown_files"]), 1)
+
+    def test_dwi_folder_is_ignored_even_when_filename_contains_t1w(self):
+        self.create_file("sub-01/dwi/sub-01_T1w_dwi.nii")
+
+        result = self.scanner.scan(self.root)
+
+        self.assertEqual(result["t1w_files"], [])
+        self.assertEqual(len(result["unknown_files"]), 1)
+
+    def test_t1w_file_must_be_inside_anatomical_folder(self):
+        self.create_file("sub-01/sub-01_T1w.nii")
 
         result = self.scanner.scan(self.root)
 

@@ -104,7 +104,7 @@ def create_incomplete_marker(marker_path):
     with open(marker_path, "w") as marker:
         marker.write(
             "This sorter output is incomplete or has not passed validation. "
-            "Do not use it with HALFpipe.\n"
+            "Do not use it for FreeSurfer processing.\n"
         )
         marker.flush()
         os.fsync(marker.fileno())

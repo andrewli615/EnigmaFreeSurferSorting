@@ -59,4 +59,3 @@ if [ "$APPLY_CHANGES" = "true" ]; then
 fi
 
 "${SORT_COMMAND[@]}"
-

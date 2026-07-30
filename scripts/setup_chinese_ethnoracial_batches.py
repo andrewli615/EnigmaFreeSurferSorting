@@ -128,6 +128,8 @@ def step1_script(batch_folder, email, subject_count):
     jobs = max(1, subject_count)
     rawdata = batch_folder / "rawdata"
     fsoutput = batch_folder / "FSoutput"
+    output_log = batch_folder / "Step1Output.txt"
+    error_log = batch_folder / "Step1Error.txt"
     return f"""#!/bin/bash
 
 #PBS -l walltime=10:00:00,select=1:ncpus=32:mem=100gb
@@ -135,8 +137,8 @@ def step1_script(batch_folder, email, subject_count):
 #PBS -A st-sfrangou-1
 #PBS -m abe
 #PBS -M {email}
-#PBS -o Step1Output.txt
-#PBS -e Step1Error.txt
+#PBS -o {output_log}
+#PBS -e {error_log}
 
 export FREESURFER_HOME=/arc/project/st-sfrangou-1/software/freesurfer
 source "$FREESURFER_HOME/SetUpFreeSurfer.sh"
@@ -155,6 +157,8 @@ def step3_script(batch_folder, email):
     location = batch_folder.name
     rawdata = batch_folder / "rawdata"
     fsoutput = batch_folder / "FSoutput"
+    output_log = batch_folder / "Step3_Output.txt"
+    error_log = batch_folder / "Step3_Error.txt"
     return f"""#!/bin/bash
 
 #PBS -l walltime=03:00:00,select=1:ncpus=32:mem=100gb
@@ -162,8 +166,8 @@ def step3_script(batch_folder, email):
 #PBS -A st-sfrangou-1
 #PBS -m abe
 #PBS -M {email}
-#PBS -o step3_log.txt
-#PBS -e step3_error.txt
+#PBS -o {output_log}
+#PBS -e {error_log}
 
 export FREESURFER_HOME=/arc/project/st-sfrangou-1/software/freesurfer
 source "$FREESURFER_HOME/SetUpFreeSurfer.sh"
@@ -213,6 +217,8 @@ def step4_script(batch_folder, email):
     location = batch_folder.name
     fsoutput = batch_folder / "FSoutput"
     tav = batch_folder / "TAV"
+    output_log = batch_folder / "Step4_Output.txt"
+    error_log = batch_folder / "Step4_Error.txt"
     return f"""#!/bin/bash
 
 #PBS -l walltime=02:00:00,select=1:ncpus=4:mem=16gb
@@ -220,8 +226,8 @@ def step4_script(batch_folder, email):
 #PBS -A st-sfrangou-1
 #PBS -m abe
 #PBS -M {email}
-#PBS -o step4_output_FreeSurfer_Tool.txt
-#PBS -e step4_error_FreeSurfer_Tool.txt
+#PBS -o {output_log}
+#PBS -e {error_log}
 
 export FREESURFER_HOME=/arc/project/st-sfrangou-1/software/freesurfer
 source "$FREESURFER_HOME/SetUpFreeSurfer.sh"
@@ -249,6 +255,8 @@ asegstats2table --subjects $SUBJECT_LIST --meas volume --tablefile data_aseg_sta
 def step5_script(batch_folder, email):
     location = batch_folder.name
     fsoutput = batch_folder / "FSoutput"
+    output_log = batch_folder / "Step5_Output_Schaefer1000.txt"
+    error_log = batch_folder / "Step5_Error_Schaefer1000.txt"
     return f"""#!/bin/bash
 
 #PBS -l walltime=5:00:00,select=1:ncpus=32:mem=100gb
@@ -256,8 +264,8 @@ def step5_script(batch_folder, email):
 #PBS -A st-sfrangou-1
 #PBS -m abe
 #PBS -M {email}
-#PBS -o output_Schaefer1000.txt
-#PBS -e error_Schaefer1000.txt
+#PBS -o {output_log}
+#PBS -e {error_log}
 
 export FREESURFER_HOME=/arc/project/st-sfrangou-1/software/freesurfer
 source "$FREESURFER_HOME/SetUpFreeSurfer.sh"
